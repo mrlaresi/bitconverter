@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 # Converts input decimal number to binary format
 def bina_to_deci():
