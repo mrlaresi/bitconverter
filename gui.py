@@ -4,45 +4,54 @@ import tkinter as tk
 import converters as cnvrt
 
 elements = {}
-types = ["decimal", "hexa", "binary", "string"]
+TYPES = ["decimal", "hexa", "octa", "string", "binary"]
+BASE = [10, 16, 2, 8, 0]
+CHARS = "0123456789abcdef"
+focus = ""
+frames = []
 
 
-def switch_case(arg):
-    '''Implementation for switch cases using dictionary'''
-    switch = switches.get(arg, "")
-    switch(arg)
-
-
-def handle_decimal(target):
-    string = elements[target]["ent"].get()
-    elements["binary"]["ent"].insert(0, cnvrt.deci_to_bina(string))
-    elements["hexa"]["ent"].insert(0, cnvrt.deci_to_hexa(string))
+def switch_case(dictionary, arg):
+    '''Returns a function from dictionary based on a input string arg.
+       Implementation to replace missing switch case in python.'''
+    return dictionary.get(arg, "")
     
-def handle_hexa(target):
-    string = elements[target]["ent"].get()
-    elements["binary"]["ent"].insert(0, cnvrt.hex_to_bina(string))
-    elements["decimal"]["ent"].insert(0, cnvrt.hex_to_deci(string))
-
-def handle_binary(target):
-    string = elements[target]["ent"].get()
-    elements["decimal"]["ent"].insert(0, cnvrt.bina_to_deci(string))
-    elements["hexa"]["ent"].insert(0, cnvrt.bina_to_hexa(string))
 
 def handle_string(target):
-    string = elements[target]["ent"].get()
-    elements["binary"]["ent"].insert(0, cnvrt.str_to_bina(string))
+    string = elements[target]["text"].get("1.0", tk.END)
+    elements["binary"]["text"].insert(0, cnvrt.str_to_bina(string))
 
+def update(source):
+    '''Updates all fields expect the one that is the source of the event'''
+    strings = elements[source]["text"].get("1.0", tk.END).splitlines()
+    base = elements[source]["base"] + 1
+    # Check if input starts with prefix
+    for string in strings:
+        if string.startswith("0x") or string.startswith("0b") or string.startswith("0o"):
+            string = string[2:]
+        for c in string:
+            if c.lower() not in CHARS[0:base]:
+                return
+    for key in elements:
+        if key != source:
+            f = switch_case(converters, key)
+            elements[key]["text"].insert("1.0", f(strings, elements[source]["base"]))
 
 def handle_typing(event, target):
     '''Handler for user input into the fields'''
+    #frames[1].grid()
     for key in elements.keys():
         if key != target:
-            elements[key]["ent"].delete(0, tk.END)
-    switch_case(target)
+            elements[key]["text"].delete("1.0", tk.END)
+    update(target)
 
 def handle_activate(event):
+    global focus
+    if (event.widget == focus):
+        return
+    focus = event.widget
     for key in elements.keys():
-        elements[key]["ent"].delete(0, tk.END)
+        elements[key]["text"].delete("1.0", tk.END)
 
 
 def main():
@@ -60,17 +69,37 @@ def main():
                 relief=tk.RAISED,
                 borderwidth=2
             )
+            frames.append(frame)
             frame.grid(row=i, column=j, padx=5, pady=5)
-            lbl = tk.Label(master=frame, text=types[index], height=2)
-            ent = tk.Entry(master=frame, width=20, insertbackground="whitesmoke")
+            lbl = tk.Label(master=frame, text=TYPES[index], height=1)
+            text = tk.Text(master=frame, wrap="word", width=40, height=3, insertbackground="whitesmoke")
             # Assign event handler to the entry field
-            ent.bind("<KeyRelease>", lambda event, target=types[index]: handle_typing(event, target))
-            ent.bind("<FocusIn>", handle_activate)
+            text.bind(
+                "<KeyRelease>", 
+                lambda event, 
+                target=TYPES[index]: handle_typing(event, target))
+            text.bind("<FocusIn>", handle_activate)
             lbl.pack()
-            ent.pack()
-            elements[types[index]] = {"ent": ent, "lbl": lbl}
+            text.pack()
+            elements[TYPES[index]] = {
+                "text": text, 
+                "lbl": lbl, 
+                "base": BASE[index]}
             index += 1
+    frame = tk.Frame(
+                master=window,
+                relief=tk.RAISED,
+                borderwidth=2
+            )
+    window.columnconfigure(0, weight=1, minsize=75)
+    window.rowconfigure(2, weight=1, minsize=50)
+    frame.grid(row=2, columnspan=2)
+    lbl = tk.Label(master=frame, text=TYPES[index], height=2)
+    text = tk.Text(master=frame, width=43, height=4, wrap="word")
+    lbl.pack()
+    text.pack()
 
+    btn = tk.Button
     # Calculate window sizes
     window_width = window.winfo_reqwidth()
     window_height = window.winfo_reqheight()
@@ -80,14 +109,16 @@ def main():
     # Open tkinter window on the center of the screen by offsetting it
     window.geometry("+{}+{}".format(pos_right,pos_down))
 
+    #frames[1].grid_remove()
+
     window.mainloop()
 
-# Switches for the switch case. Must be at the bottom of the file to work.
-switches = {
-    "decimal": handle_decimal,
-    "hexa": handle_hexa,
-    "binary": handle_binary,
-    "string": handle_string
+# Switches for the switch case
+converters = {
+    "decimal": cnvrt.decimal,
+    "hexa": cnvrt.hexa,
+    "binary": cnvrt.binary,
+    "octa": cnvrt.octa
 }
 
 if __name__ == "__main__":

@@ -1,56 +1,102 @@
 #!/usr/bin/env python
 
-def deci_to_bina(input):
+"""def deci_to_bina(string):
     '''Converts input decimal number to binary format'''
     try:
-        return bin(int(input))
+        return bin(int(string))
     except:
         return ""
 
-def hex_to_bina(input):
+def hex_to_bina(string):
     '''Converts input hex number to binary format'''
     try:
-        return bin(int(input, 16))
+        return bin(int(string, 16))
     except:
         return ""
 
-def str_to_bina(input):
+def octa_to_bina(string):
+    '''Converts input octal number to binary format'''
+    try:
+        return bin(int(string, 8))
+    except:
+        return ""
+
+def str_to_bina(string):
     '''Converts input UTF-8 string to binary format'''
     try:
-        return ''.join(map(bin, bytearray(input, "utf-8")))
+        return ''.join(map(bin, bytearray(string, "utf-8")))
+    except:
+        return """""
+
+def binary(string, base):
+    try:
+        return bin(int(string, base))
     except:
         return ""
 
 
 
-def bina_to_deci(input):
+"""def bina_to_deci(string):
     '''Converts input binary to decimal format'''
     try:
-        return str(int(input, 2))
+        return int(string, 2)
     except:
         return ""
 
-def hex_to_deci(input):
+def hex_to_deci(string):
     '''Converts input hex number to decimal format'''
     try:
-        return str(int(input, 16))
+        return int(string, 16)
+    except:
+        return ""
+
+def octa_to_deci(string):
+    '''Converts input octal number to decimal format'''
+    try: 
+        return int(string, 8)
+    except:
+        return """""
+
+def decimal(string, base):
+    try:
+        return int(string, base)
     except:
         return ""
 
 
+def octa(string, base):
+    try: 
+        return oct(int(string, base))
+    except: 
+        return ""
 
-def bina_to_hexa(input):
+"""def bina_to_hexa(string):
     '''Converts input binary to hexadecimal format'''
     try:
-        return hex(int(input, 2))
+        return hex(int(string, 2))
     except:
         return ""
 
-def deci_to_hexa(input):
+def deci_to_hexa(string):
     try:
-        return hex(int(input))
+        return hex(int(string))
     except:
         return ""
+
+def octa_to_hexa(string):
+    try: 
+        return hex(int(string, 8))
+    except:
+        return"""""
+
+def hexa(string, base):
+    ret = ""
+    for s in string:
+        try:
+            ret = ' '.join([ret, hex(int(s, base))])
+        except:
+            return ret
+    return ret
 
 
 '''def hex_to_char():
