@@ -5,7 +5,7 @@ import converters as cnvrt
 
 elements = {}
 TYPES = ["decimal", "hexa", "octa", "string", "binary"]
-BASE = [10, 16, 2, 8, 0]
+BASE = [10, 16, 8, 0, 2]
 CHARS = "0123456789abcdef"
 focus = ""
 frames = []
@@ -56,50 +56,67 @@ def handle_activate(event):
 
 def main():
     # Create new window
-    window = tk.Tk()
+    window = tk.Tk(className="Converter")
+    window.configure(bg="gray10")
 
     index = 0
     # Create grid layout and the components
-    for i in range(2):
-        window.columnconfigure(i, weight=1, minsize=75)
-        for j in range(2):
-            window.rowconfigure(j, weight=1, minsize=50)
+    for i in range(3): #row
+        for j in range(2): #column
             frame = tk.Frame(
                 master=window,
                 relief=tk.RAISED,
-                borderwidth=2
+                bg="gray15",
+                highlightthickness=2,
+                highlightbackground="gray15",
             )
             frames.append(frame)
-            frame.grid(row=i, column=j, padx=5, pady=5)
-            lbl = tk.Label(master=frame, text=TYPES[index], height=1)
-            text = tk.Text(master=frame, wrap="word", width=40, height=3, insertbackground="whitesmoke")
-            # Assign event handler to the entry field
+            if (index > len(TYPES)-2):
+                frame.grid(row=i, columnspan=2, padx=5, pady=5)
+            else:
+                frame.grid(row=i, column=j, padx=5, pady=5)
+            lbl = tk.Label(
+                master=frame, 
+                text=TYPES[index], 
+                height=1,
+                bg="gray15",
+                fg="gray90"
+            )
+            text = tk.Text(
+                master=frame, 
+                wrap="word", 
+                width=40, 
+                height=3, 
+                bg="gray11",
+                fg="gray90",
+                borderwidth=0,
+                insertbackground="whitesmoke"
+            )
+            if (index > len(TYPES)-2):
+                text.config(width=82, height=5)
+            
+
+            # Assign event handler firing on key releaseto the text field
             text.bind(
                 "<KeyRelease>", 
                 lambda event, 
-                target=TYPES[index]: handle_typing(event, target))
+                target=TYPES[index]: handle_typing(event, target)
+            )
+            # Assign event handler firing on element getting focus to the text
+            # field
             text.bind("<FocusIn>", handle_activate)
             lbl.pack()
             text.pack()
             elements[TYPES[index]] = {
                 "text": text, 
                 "lbl": lbl, 
-                "base": BASE[index]}
+                "base": BASE[index]
+            }
             index += 1
-    frame = tk.Frame(
-                master=window,
-                relief=tk.RAISED,
-                borderwidth=2
-            )
-    window.columnconfigure(0, weight=1, minsize=75)
-    window.rowconfigure(2, weight=1, minsize=50)
-    frame.grid(row=2, columnspan=2)
-    lbl = tk.Label(master=frame, text=TYPES[index], height=2)
-    text = tk.Text(master=frame, width=43, height=4, wrap="word")
-    lbl.pack()
-    text.pack()
+            if (index > len(TYPES)-1): 
+                break
 
-    btn = tk.Button
+
     # Calculate window sizes
     window_width = window.winfo_reqwidth()
     window_height = window.winfo_reqheight()
@@ -118,7 +135,8 @@ converters = {
     "decimal": cnvrt.decimal,
     "hexa": cnvrt.hexa,
     "binary": cnvrt.binary,
-    "octa": cnvrt.octa
+    "octa": cnvrt.octa,
+    "string": cnvrt.string
 }
 
 if __name__ == "__main__":
