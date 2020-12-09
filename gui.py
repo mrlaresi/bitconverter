@@ -8,6 +8,7 @@ TYPES = ["decimal", "hexa", "octa", "string", "binary"]
 BASE = [10, 16, 8, 0, 2]
 CHARS = "0123456789abcdef"
 focus = ""
+changed = False
 frames = []
 
 
@@ -23,15 +24,13 @@ def handle_string(target):
 
 def update(source):
     '''Updates all fields expect the one that is the source of the event'''
-    strings = elements[source]["text"].get("1.0", tk.END).splitlines()
+    strings = elements[source]["text"].get("1.0", tk.END).split()
     base = elements[source]["base"] + 1
-    # Check if input starts with prefix
+    # Check if input starts with prefix and is valid
     for string in strings:
         if string.startswith("0x") or string.startswith("0b") or string.startswith("0o"):
             string = string[2:]
-        for c in string:
-            if c.lower() not in CHARS[0:base]:
-                return
+
     for key in elements:
         if key != source:
             f = switch_case(converters, key)
@@ -39,7 +38,12 @@ def update(source):
 
 def handle_typing(event, target):
     '''Handler for user input into the fields'''
-    #frames[1].grid()
+    global changed
+    if (changed):
+        s = event.widget.get("1.0", tk.END)[-2:-1]
+        elements[target]["text"].delete("1.0", tk.END)
+        event.widget.insert("1.0", s)
+        changed = False
     for key in elements.keys():
         if key != target:
             elements[key]["text"].delete("1.0", tk.END)
@@ -47,11 +51,11 @@ def handle_typing(event, target):
 
 def handle_activate(event):
     global focus
+    global changed
     if (event.widget == focus):
         return
     focus = event.widget
-    for key in elements.keys():
-        elements[key]["text"].delete("1.0", tk.END)
+    changed = True
 
 
 def main():
@@ -62,7 +66,9 @@ def main():
     index = 0
     # Create grid layout and the components
     for i in range(3): #row
+        window.rowconfigure(i, weight=1)
         for j in range(2): #column
+            window.columnconfigure(j, weight=1)
             frame = tk.Frame(
                 master=window,
                 relief=tk.RAISED,
@@ -71,10 +77,12 @@ def main():
                 highlightbackground="gray15",
             )
             frames.append(frame)
+            frame.grid_rowconfigure(1, weight=1)
+            frame.grid_columnconfigure(1, weight=1)
             if (index > len(TYPES)-2):
-                frame.grid(row=i, columnspan=2, padx=5, pady=5)
+                frame.grid(row=i, columnspan=2, padx=5, pady=5, sticky="NSEW")
             else:
-                frame.grid(row=i, column=j, padx=5, pady=5)
+                frame.grid(row=i, column=j, padx=5, pady=5, sticky="NSEW")
             lbl = tk.Label(
                 master=frame, 
                 text=TYPES[index], 
@@ -93,7 +101,7 @@ def main():
                 insertbackground="whitesmoke"
             )
             if (index > len(TYPES)-2):
-                text.config(width=82, height=5)
+                text.config(height=5, width=82,)
             
 
             # Assign event handler firing on key releaseto the text field
@@ -106,7 +114,7 @@ def main():
             # field
             text.bind("<FocusIn>", handle_activate)
             lbl.pack()
-            text.pack()
+            text.pack(expand=True, fill="both")
             elements[TYPES[index]] = {
                 "text": text, 
                 "lbl": lbl, 
