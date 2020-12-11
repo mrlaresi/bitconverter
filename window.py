@@ -92,11 +92,11 @@ class WindowHandler:
                 text.bind(
                     "<KeyRelease>",
                     lambda event,
-                    target=self.TYPES[index]: _handle_typing(event, target)
+                    target=self.TYPES[index]: self._handle_typing(event, target)
                 )
                 # Assign event handler firing on element getting focus to the text
                 # field
-                text.bind("<FocusIn>", lambda event: _handle_activate(event))
+                text.bind("<FocusIn>", lambda event: self._handle_activate(event))
                 lbl.pack()
                 text.pack(expand=True, fill="both")
                 self.elements[self.TYPES[index]] = {
@@ -108,23 +108,7 @@ class WindowHandler:
                 if (index > len(self.TYPES)-1):
                     break
 
-    def _handle_typing(self, event, target):
-        '''Handler for user input into the fields'''
-        if (self.changed):
-            s = event.widget.get("1.0", tk.END)[-2:-1]
-            elements[target]["text"].delete("1.0", tk.END)
-            event.widget.insert("1.0", s)
-            changed = False
-        for key in self.elements.keys():
-            if key != target:
-                self.elements[key]["text"].delete("1.0", tk.END)
-        _update(target)
 
-    def _handle_activate(self, event):
-        if (event.widget == self.focus):
-            return
-        self.focus = event.widget
-        self.changed = True
 
     def _update(self, source):
         '''Updates all fields expect the one that is the source of the event'''
@@ -138,7 +122,7 @@ class WindowHandler:
         for key in elements:
             if key != source:
                 f = switch_case(converters, key)
-                elements[key]["text"].insert("1.0", f(strings, elements[source]["base"]))
+                self.elements[key]["text"].insert("1.0", f(strings, self.elements[source]["base"]))
 
     def switch_case(self, dictionary, arg):
         '''Returns a function from dictionary based on a input string arg.
