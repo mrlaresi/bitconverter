@@ -6,7 +6,6 @@ from window import WindowHandler
 def main():
     # Create new window
     parent = WindowHandler()
-    parent.number_converter()
 
     # Calculate window sizes
     '''window_width = window.winfo_reqwidth()
@@ -17,7 +16,7 @@ def main():
     # Open tkinter window on the center of the screen by offsetting it
     window.geometry("+{}+{}".format(pos_right,pos_down))'''
 
-    parent.mainloop()
+    parent.start()
 
 
 
