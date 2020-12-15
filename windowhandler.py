@@ -1,30 +1,27 @@
 import tkinter as tk
+from framecontainer import FrameContainer
 import converters as cnvrt
 
 
 class WindowHandler:
-    BACKGROUND = "gray10"
-    LIGHTERGROUND = "gray15"
-    TEXTCOLOR = "gray90"
     NUMBERS = ["Decimal", "Hexa", "Octa", "String", "Binary"]
     IP = ["IP", "Subnet", "Subnet Mask", "Broadcast", "First address", "Last address"]
     BASE = [10, 16, 8, 0, 2]
     CONVERTERS = ["Menu", "Numbers", "IP adresses"]
 
-    
-    window = ""
-    active_frame = ""
-    focus = ""
-    changed = False
+
     frames = {} # Frames in the main window
+    buttons = []
 
     # Switches for the switch case
-    converters = {
+    number_converters = {
         "Decimal": cnvrt.decimal,
         "Hexa": cnvrt.hexa,
         "Binary": cnvrt.binary,
         "Octa": cnvrt.octa,
         "String": cnvrt.string,
+    }
+    ip_converters = {
         "IP": cnvrt.ip,
         "Subnet": cnvrt.ip,
         "Subnet Mask": cnvrt.mask,
@@ -35,37 +32,41 @@ class WindowHandler:
 
     def __init__(self):
         self.window = tk.Tk(className="Converter")
-        self.window.configure(bg=self.BACKGROUND)
         self.window.rowconfigure(0, weight=1)
         self.window.columnconfigure(0, weight=1)
         self.window.columnconfigure(1, weight=2)
 
-        for i in range(0, len(self.CONVERTERS)):
-            frame = tk.Frame(
-                master=self.window,
-                relief=tk.RAISED,
-                bg=self.BACKGROUND,
-            )
-            self.frames[self.CONVERTERS[i]] = {"frame": frame}
-            frame.grid(row=0, column=i, sticky="NSEW")
-            frame.grid_rowconfigure(0, weight=1)
-            frame.grid_columnconfigure(0, weight=1)
-            if i != 0: # "Menu" shouldn't become a label
-                label = tk.Label(
-                    master=self.frames[self.CONVERTERS[0]]["frame"],
-                    bg=self.LIGHTERGROUND,
-                    fg=self.TEXTCOLOR,
-                    width=20,
-                    text=self.CONVERTERS[i],
-                    relief=tk.RAISED,
-                    anchor="nw"
-                )
-                label.pack(fill="x", pady=(5,0), padx=(5,0))
-                label.bind("<Button-1>", self._handle_click)
-        self._number_converter()
-        self._ip_converter()
+        self._create_frames()
+        self.frames[self.CONVERTERS[1]].grid()
 
-    def _number_converter(self):
+    def _create_frames(self):
+        '''Creates the base layout for the window'''
+        self.menu = tk.Frame(master=self.window, relief=tk.RAISED)
+        self.menu.grid(row=0, column=0, sticky="NSEW")
+        self.menu.grid_rowconfigure(0, weight=1)
+        self.menu.grid_columnconfigure(0, weight=1)
+
+        frame = FrameContainer(self.window, self.NUMBERS, self.number_converters, self.BASE)
+        self.frames[self.CONVERTERS[1]] = frame
+        frame = FrameContainer(self.window, self.IP, self.ip_converters)
+        self.frames[self.CONVERTERS[2]] = frame
+        for i in range(1, len(self.CONVERTERS)):
+            
+
+            btn = tk.Button(
+                master=self.menu,
+                width=20,
+                text=self.CONVERTERS[i],
+                #relief=tk.RAISED,
+                anchor="nw"
+            )
+            self.buttons.append(btn)
+            btn.pack(fill="x", pady=(5,0), padx=(5,0))
+            btn.bind("<Button-1>", self._handle_click)
+        self.active_frame = self.CONVERTERS[1]
+
+            
+    """def _number_converter(self):
         '''Creates the number converter view'''
         index = 0
         elements = {}
@@ -228,17 +229,26 @@ class WindowHandler:
         self.focus = event.widget
         self.changed = True
 
-    def _handle_click(self, event):
-        if (event.widget.cget("text") != self.active_frame):
-            self.frames[self.active_frame]["frame"].grid_forget()
-            self.active_frame = event.widget.cget("text")
-            self.frames[self.active_frame]["frame"].grid(row=0, column=1, sticky="NSEW")
+
 
     def _switch_case(self, dictionary, arg):
         '''Returns a function from dictionary based on a input string arg.
         Implementation to replace missing switch case in python.'''
-        return dictionary.get(arg, "")
+        return dictionary.get(arg, "")"""
     
+    def _handle_click(self, event):
+        if (event.widget.cget("text") != self.active_frame):
+            self.frames[self.active_frame].forget()
+            self.active_frame = event.widget.cget("text")
+            self.frames[self.active_frame].grid()
+
+    def set_colors(self, bg, lbg, txt):
+        self.window.config(bg=bg)
+        self.menu.config(bg=bg)
+        for key in self.frames:
+            self.frames[key].set_colors(bg, lbg, txt)
+        for button in self.buttons:
+            button.config(bg=lbg, fg=txt,)
 
     def start(self):
         '''Starts the tkinter instance'''

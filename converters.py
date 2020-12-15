@@ -129,7 +129,7 @@ def bits_to_decimal(stri):
         jump += 8
     return ret[:-1]
 
-print(bits_to_decimal(ip("bepsis/31")))
+'''print(bits_to_decimal(ip("bepsis/31")))
 ip("bepsis")
 ip("/ree")
-print(bits_to_decimal(ip("/1")))
+print(bits_to_decimal(ip("/1")))'''
