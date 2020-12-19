@@ -2,16 +2,22 @@
 
 def binary(stri, base):
     '''Converts input to binary format'''
+    if base == 0:
+        stri = _to_hex(stri)
+        base = 16
     ret = ""
     for s in stri:
         try:
-            ret = ' '.join([ret, bin(int(s, base))])
+            ret = ' '.join([ret, f"{int(s, base):08b}"])
         except:
             break
     return ret.strip()
 
 def decimal(stri, base):
     '''Converts input to decimal format'''
+    if base == 0:
+        stri = _to_hex(stri)
+        base = 16
     ret = ""
     for s in stri:
         try:
@@ -23,53 +29,48 @@ def decimal(stri, base):
 
 def octa(stri, base):
     '''Converts input to octal format'''
+    if base == 0:
+        stri = _to_hex(stri)
+        base = 16
     ret = ""
     for s in stri:
         try: 
-            ret = ' '.join([ret, oct(int(s, base))])
+            ret = ' '.join([ret, f"{int(s, base):03o}"])
         except: 
             break
     return ret.strip()
 
 def hexa(stri, base):
     '''Converts input to hex format'''
+    if base == 0:
+        return ' '.join(_to_hex(stri)).strip()
     ret = ""
     for s in stri:
         try:
-            ret = ' '.join([ret, hex(int(s, base))])
+            ret = ' '.join([ret, f"{int(s, base):02x}"])
         except:
             break
     return ret.strip()
 
 def string(stri, base):
     '''Converts input to string format'''
-    ret = ""
-    if base == 10:
-        return ret
-    if base == 8:
-        stri = hexa(stri, 8)[2:]
-    if base == 2:
-        for s in stri:
-            try:
-                ret = ' '.join([ret, chr(int(s, 2))])
-            except:
-                continue
-    else:
-        if type(stri) == type([]):
-            for s in stri:
-                try:
-                    ret = ' '.join([ret, _hex_char(s)])
-                except:
-                    ret
-        else:
-            ret = _hex_char(stri)                    
-    return ret.strip()
+    return _to_str(hexa(stri, base)).strip()
 
-def _hex_char(stri):
-    if len(stri) % 2 != 0:
-        stri = "0" + stri
+def _to_str(stri):
+    '''Turns hex string to utf-8'''
     try:
         return bytes.fromhex(stri).decode("utf-8")
+    except:
+        return ""
+
+def _to_hex(stri):
+    try:
+        stri = str.encode(''.join(stri), "utf-8").hex()
+        ret = []
+        for i in range(0, len(stri), 2):
+            ret.append(stri[i:i+2])
+            i += 2
+        return ret
     except:
         return ""
 

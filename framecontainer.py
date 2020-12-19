@@ -73,7 +73,7 @@ class FrameContainer:
         '''Handler for user input into the fields'''
         #print(event.widget.get("1.0", tk.END))
         if (self.changed):
-            self.widgets[target].reset_input()
+            #self.widgets[target].reset_input()
             self.changed = False
         for key in self.widgets.keys():
             if key != target:
@@ -90,11 +90,6 @@ class FrameContainer:
     def _update(self, source):
         '''Updates all fields expect the one that is the source of the event'''
         strings = self.widgets[source].get_input().split()
-        # Check if input starts with prefix and is valid
-        for string in strings:
-            if string.startswith("0x") or string.startswith("0b") or string.startswith("0o"):
-                string = string[2:]
-
         for key in self.widgets:
             if key != source:
                 func = self._switch_case(self.converters, key)
