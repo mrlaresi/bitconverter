@@ -1,14 +1,14 @@
 import tkinter as tk
 from framecontainer import FrameContainer
+from ipcontainer import IpContainer
 import converters as cnvrt
 
 
 class WindowHandler:
     NUMBERS = ["Decimal", "Hexa", "Octa", "String", "Binary"]
-    IP = ["IP", "Subnet", "Subnet Mask", "Broadcast", "First address", "Last address"]
+    IP = ["IP", "Subnet Mask", "Subnet", "Broadcast", "First address", "Last address"]
     BASE = [10, 16, 8, 0, 2]
     CONVERTERS = ["Menu", "Numbers", "IP adresses"]
-
 
     frames = {} # Frames in the main window
     buttons = []
@@ -25,7 +25,7 @@ class WindowHandler:
         "IP": cnvrt.ip,
         "Subnet": cnvrt.ip,
         "Subnet Mask": cnvrt.mask,
-        "Broadcast": cnvrt.ip,
+        "Broadcast": cnvrt.broadcast,
         "First address": cnvrt.ip,
         "Last address": cnvrt.ip
     }
@@ -41,28 +41,41 @@ class WindowHandler:
 
     def _create_frames(self):
         '''Creates the base layout for the window'''
+        # Create the menu
         self.menu = tk.Frame(master=self.window, relief=tk.RAISED)
         self.menu.grid(row=0, column=0, sticky="NSEW")
         self.menu.grid_rowconfigure(0, weight=1)
         self.menu.grid_columnconfigure(0, weight=1)
 
-        frame = FrameContainer(self.window, self.NUMBERS, self.number_converters, self.BASE)
+        # Number converting view
+        frame = FrameContainer(
+            self.window, 
+            self.NUMBERS, 
+            self.number_converters, 
+            self.BASE
+        )
         self.frames[self.CONVERTERS[1]] = frame
-        frame = FrameContainer(self.window, self.IP, self.ip_converters)
-        self.frames[self.CONVERTERS[2]] = frame
-        for i in range(1, len(self.CONVERTERS)):
-            
 
+        # Ipv4 converting view
+        frame = IpContainer(
+            self.window, 
+            self.IP, 
+            self.ip_converters
+        )
+        self.frames[self.CONVERTERS[2]] = frame
+
+        # Buttons for the menu
+        for i in range(1, len(self.CONVERTERS)):
             btn = tk.Button(
                 master=self.menu,
                 width=20,
                 text=self.CONVERTERS[i],
-                #relief=tk.RAISED,
                 anchor="nw"
             )
             self.buttons.append(btn)
             btn.pack(fill="x", pady=(5,0), padx=(5,0))
             btn.bind("<Button-1>", self._handle_click)
+        # Show number converter by default
         self.active_frame = self.CONVERTERS[1]
 
             

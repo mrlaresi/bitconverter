@@ -102,10 +102,39 @@ def ip_to_bit(stri):
     return ret
 
 def mask(stri):
-    return _ip(stri, True)
+    return bits_to_decimal(_ip(stri, True))
 
 def ip(stri):
     return _ip(stri)
+
+def subnet(ip, mask):
+    '''Calculate subnet address from ip address and subnet mask'''
+    ip = ip.split(".")
+    mask = mask.split(".")
+    ret = []
+    for i in range(0, 4):
+        ret.append(str(int(ip[i]) & int(mask[i])))
+    return '.'.join(ret)
+
+def broadcast(subnet, mask):
+    '''Calculate broadcast address from subnet address and subnet mask'''
+    subnet = subnet.split(".")
+    mask = mask.split(".")
+    ret = []
+    for i in range(0, 4):
+        ret.append(str(int(subnet[i]) | ~ int(mask[i]) & 0xFF))
+    return '.'.join(ret)
+
+def first_ip(subnet):
+    subnet = subnet.split(".")
+    subnet[3] = str(int(subnet[3]) + 1)
+    return '.'.join(subnet)
+
+def last_ip(subnet, mask):
+    ret = broadcast(subnet, mask).split(".")
+    ret[3] = str(int(ret[3]) - 1)
+    return '.'.join(ret)
+
 
 def _ip(stri, which=False):
     if type(stri) == type([]):
@@ -119,7 +148,8 @@ def _ip(stri, which=False):
         return _mask(stri[0])
 
 def bits_to_decimal(stri):
-    '''Transforms 32 bit long string of bits to corresponding decimal numbers'''
+    '''Transforms 32 bit long string of bits to 8 bit long decimal numbers,
+    separated by "." character'''
     if len(stri) != 32:
         return ""
     jump = 0
@@ -134,3 +164,5 @@ def bits_to_decimal(stri):
 ip("bepsis")
 ip("/ree")
 print(bits_to_decimal(ip("/1")))'''
+print(broadcast("192.168.1.0", "255.255.255.0"))
+print(last_ip(subnet("192.168.1.144", "255.0.0.0"), "255.192.0.0"))

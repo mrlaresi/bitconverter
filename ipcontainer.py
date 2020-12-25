@@ -2,8 +2,9 @@ import tkinter as tk
 from math import ceil
 from textwidget import TextWidget
 
-class FrameContainer:
+class IpContainer:
     frames = []
+    broadcast = ""
 
     def __init__(self, parent, headers, converters, bases=""):
         self.parent = parent
@@ -48,9 +49,6 @@ class FrameContainer:
                 self.widgets[headers[index]] = widget
                 
                 index += 1
-                if (index > len(self.headers)-1):
-                    break
-
     
                 
     def grid(self):
@@ -69,18 +67,17 @@ class FrameContainer:
     def _handle_typing(self, event, target):
         '''Handler for user input into the fields'''
         #print(event.widget.get("1.0", tk.END))
-        for key in self.widgets.keys():
-            if key != target:
-                self.widgets[key].delete()
-        self._update(target)
-
-    def _update(self, source):
-        '''Updates all fields expect the one that is the source of the event'''
-        strings = self.widgets[source].get_input().split()
+        strings = self.widgets[target].get_input().split()
         for key in self.widgets:
-            if key != source:
+            if key != target:
+                if target == self.headers[1] and key == self.headers[0]:
+                    continue
+
                 func = self._switch_case(self.converters, key)
-                self.widgets[key].insert(func(strings, self.widgets[source].get_base()))
+                ret_val = func(strings)
+                self.widgets[key].delete()
+                self.widgets[key].insert(ret_val)
+
                 
     def _switch_case(self, dictionary, arg):
         '''Returns a function from dictionary based on a input string arg.
