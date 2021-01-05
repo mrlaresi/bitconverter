@@ -1,6 +1,8 @@
 import tkinter as tk
 
 class TextWidget:
+    '''Class creates Label and Text field, which are parented to the parent
+    parameter. Handles inserting and removing text from the widget.'''
     def __init__(self, parent, header, base=0):
         self.parent = parent
         self.header = header
@@ -9,16 +11,6 @@ class TextWidget:
         self.lbl = tk.Label(master=parent, text=self.header, height=1)
         self.txt = tk.Text(master=parent, wrap="word", width=40, 
                             height=3,borderwidth=0)
-
-        # Assign event handler firing on key release to the text field
-        '''self.text.bind(
-            "<KeyRelease>", 
-            lambda event, 
-            target=self.header: self._handle_typing(event, target)
-        )'''
-        # Assign event handler firing on element getting focus to the
-        # text field
-        #self.text.bind("<FocusIn>", self._handle_activate)
 
         self.lbl.pack()
         self.txt.pack(expand=True, fill="both")
@@ -44,9 +36,11 @@ class TextWidget:
     # --------------------------------------------
 
     def get_input(self):
+        '''Return the text contained in the widget'''
         return self.txt.get("1.0", tk.END)
 
     def get_base(self):
+        '''Return the base of the stored number'''
         return self.base
 
     # --------------------------------------------
@@ -60,9 +54,6 @@ class TextWidget:
             lambda event,
             target=self.header: func(event, target)
         )
-
-    def set_activate_handler(self, func):
-        self.txt.bind("<FocusIn>", func)
 
     def set_base(self, base):
         '''Sets the base of the number for conversions'''

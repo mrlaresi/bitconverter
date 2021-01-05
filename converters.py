@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import re
+
 def binary(stri, base):
     '''Converts input to binary format'''
     if base == 0:
@@ -75,9 +77,12 @@ def _to_hex(stri):
         return ""
 
 
-def _mask(stri):
+def mask(stri):
     '''Converts subnet mask in "/x" format to string of bits'''
-    if len(stri) > 3:
+    stri = ' '.join(stri)
+    if is_ip(stri) and is_mask(stri):
+        return stri
+    if not '/' in stri:
         return ""
     ret = ""
     try:
@@ -91,7 +96,9 @@ def _mask(stri):
         else:
             ret += "0"
         i += 1
-    return ret
+    if is_mask(ret):
+        return bits_to_decimal(ret)
+    return ""
 
 def ip_to_bit(stri):
     '''Converts ip address from decimal format to string of bits'''
@@ -101,18 +108,32 @@ def ip_to_bit(stri):
         ret += str(binary(s, 10))
     return ret
 
-def mask(stri):
-    return bits_to_decimal(_ip(stri, True))
-
 def ip(stri):
-    return _ip(stri)
+    stri = ''.join(stri)
+    if is_ip(stri):
+        return stri
+    return ""
+    '''stri = stri.split("/")
+    
+    if len(stri) != 2:
+        return ""
+    if which:
+        return _mask(stri[1])
+    else:
+        return _mask(stri[0])'''
 
 def subnet(ip, mask):
     '''Calculate subnet address from ip address and subnet mask'''
-    ip = ip.split(".")
-    mask = mask.split(".")
+    if not is_ip(ip):
+        return ""
+    if not is_ip(mask):
+        return ""
+        
+    ip = ip.split('.')
+    mask = mask.split('.')
     ret = []
     for i in range(0, 4):
+        # AND operation of ip address and subnet mask
         ret.append(str(int(ip[i]) & int(mask[i])))
     return '.'.join(ret)
 
@@ -136,16 +157,8 @@ def last_ip(subnet, mask):
     return '.'.join(ret)
 
 
-def _ip(stri, which=False):
-    if type(stri) == type([]):
-        stri = ''.join(stri)
-    stri = stri.split("/")
-    if len(stri) != 2:
-        return ""
-    if which:
-        return _mask(stri[1])
-    else:
-        return _mask(stri[0])
+
+
 
 def bits_to_decimal(stri):
     '''Transforms 32 bit long string of bits to 8 bit long decimal numbers,
@@ -160,9 +173,35 @@ def bits_to_decimal(stri):
         jump += 8
     return ret[:-1]
 
+def is_ip(address):
+    '''Check if ip address is valid address'''
+    return re.match("^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$", address)
+
+def is_mask(bitstring):
+    if not is_binary(bitstring):
+        bitstring = binary(bitstring.split('.'), 10)
+        bitstring = ''.join(bitstring.split())
+    if len(bitstring) != 32:
+        return False
+    i = 0
+    first_zero = False
+    for char in bitstring:
+        if i < 8 and char == "0":
+            return False
+        elif i > 7 and char == "0":
+            first_zero = True
+        if first_zero and char == "1":
+            return False
+        i+=1
+    return True
+
+def is_binary(stri):
+    return re.match("[01]", stri)
+
 '''print(bits_to_decimal(ip("bepsis/31")))
 ip("bepsis")
 ip("/ree")
-print(bits_to_decimal(ip("/1")))'''
+print(bits_to_decimal(ip("/1")))
 print(broadcast("192.168.1.0", "255.255.255.0"))
-print(last_ip(subnet("192.168.1.144", "255.0.0.0"), "255.192.0.0"))
+print(last_ip(subnet("192.168.1.144", "255.0.0.0"), "255.192.0.0"))'''
+#print(is_mask("11111111111000000000000000000000"))
