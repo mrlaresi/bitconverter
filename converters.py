@@ -7,26 +7,54 @@ def binary(stri, base):
     if base == 0:
         stri = _to_hex(stri)
         base = 16
-    ret = ""
-    for s in stri:
-        try:
-            ret = ' '.join([ret, f"{int(s, base):08b}"])
-        except:
-            break
-    return ret.strip()
+    ret = []
+
+    for item in stri:
+        results = []
+        if is_whitespace(item):
+            item = item.split()
+        else:
+            item = [item]
+        for s in item:
+            try:
+                results.append(f"{int(s, base):08b}")
+            except:
+                break
+        ret.append(results)
+
+    i = 0
+    while i < len(ret):
+        ret[i] = ' '.join(ret[i]).strip()
+        i += 1
+      
+    return '\n'.join(ret).strip()
 
 def decimal(stri, base):
     '''Converts input to decimal format'''
     if base == 0:
         stri = _to_hex(stri)
         base = 16
-    ret = ""
-    for s in stri:
-        try:
-            ret = ' '.join([ret, str(int(s, base))])
-        except:
-            break
-    return ret.strip()
+    ret = []
+
+    for item in stri:
+        results = []
+        if is_whitespace(item):
+            item = item.split()
+        else:
+            item = [item]
+        for s in item:
+            try:
+                results.append(str(int(s, base)))
+            except:
+                break
+        ret.append(results)
+
+    i = 0
+    while i < len(ret):
+        ret[i] = ' '.join(ret[i]).strip()
+        i += 1
+      
+    return '\n'.join(ret).strip()
 
 
 def octa(stri, base):
@@ -34,25 +62,53 @@ def octa(stri, base):
     if base == 0:
         stri = _to_hex(stri)
         base = 16
-    ret = ""
-    for s in stri:
-        try: 
-            ret = ' '.join([ret, f"{int(s, base):03o}"])
-        except: 
-            break
-    return ret.strip()
+    ret = []
+
+    for item in stri:
+        results = []
+        if is_whitespace(item):
+            item = item.split()
+        else:
+            item = [item]
+        for s in item:
+            try: 
+                results.append(f"{int(s, base):03o}")
+            except: 
+                break
+        ret.append(results)
+            
+    i = 0
+    while i < len(ret):
+        ret[i] = ' '.join(ret[i]).strip()
+        i += 1
+      
+    return '\n'.join(ret).strip()
 
 def hexa(stri, base):
     '''Converts input to hex format'''
     if base == 0:
         return ' '.join(_to_hex(stri)).strip()
-    ret = ""
-    for s in stri:
-        try:
-            ret = ' '.join([ret, f"{int(s, base):02x}"])
-        except:
-            break
-    return ret.strip()
+    ret = []
+
+    for item in stri:
+        results = []
+        if is_whitespace(item):
+            item = item.split()
+        else:
+            item = [item]
+        for s in item:
+            try:
+                results.append(f"{int(s, base):02x}")
+            except:
+                break
+        ret.append(results)
+    
+    i = 0
+    while i < len(ret):
+        ret[i] = ' '.join(ret[i]).strip()
+        i += 1
+      
+    return '\n'.join(ret).strip()
 
 def string(stri, base):
     '''Converts input to string format'''
@@ -75,6 +131,10 @@ def _to_hex(stri):
         return ret
     except:
         return ""
+
+def is_whitespace(stri):
+    '''Check if string contains whitespace characters'''
+    return any(c.isspace() for c in stri)
 
 
 def mask(stri):

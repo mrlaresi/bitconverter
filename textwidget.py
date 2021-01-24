@@ -37,7 +37,9 @@ class TextWidget:
 
     def get_input(self):
         '''Return the text contained in the widget'''
-        return self.txt.get("1.0", tk.END)
+        ret = self.txt.get("1.0", tk.END).splitlines(keepends=True)
+        ret[-1] = ret[-1][:-1]
+        return ret
 
     def get_base(self):
         '''Return the base of the stored number'''

@@ -10,12 +10,11 @@ class NumContainer(Container):
 
     def _handle_typing(self, event, target):
         '''Handler for user input into the fields'''
-        #print(event.widget.get("1.0", tk.END))
-        for key in self.widgets.keys():
+        for key in self.widgets:
             if key != target:
                 self.widgets[key].delete()
         
-        strings = self.widgets[target].get_input().split()
+        strings = self.widgets[target].get_input()
         for key in self.widgets:
             if key != target:
                 func = self._switch_case(self.converters, key)

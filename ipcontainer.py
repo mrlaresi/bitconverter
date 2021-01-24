@@ -13,7 +13,7 @@ class IpContainer(Container):
 
     def _handle_typing(self, event, target):
         '''Handler for user input into the fields'''
-        strings = self.widgets[target].get_input().split()
+        strings = self.widgets[target].get_input()
         func = self._switch_case(self.converters, target)
         ret = func(strings)
         if target == self.headers[0]:
