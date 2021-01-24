@@ -1,5 +1,5 @@
 import tkinter as tk
-from framecontainer import FrameContainer
+from numcontainer import NumContainer
 from ipcontainer import IpContainer
 import converters as cnvrt
 
@@ -48,7 +48,7 @@ class WindowHandler:
         self.menu.grid_columnconfigure(0, weight=1)
 
         # Number converting view
-        frame = FrameContainer(
+        frame = NumContainer(
             self.window, 
             self.NUMBERS, 
             self.number_converters, 

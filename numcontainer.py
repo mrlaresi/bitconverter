@@ -3,7 +3,7 @@ from math import ceil
 from textwidget import TextWidget
 from container import Container
 
-class FrameContainer(Container):
+class NumContainer(Container):
 
     def __init__(self, parent, headers, converters, bases=""):
         super().__init__(parent, headers, converters, bases)
