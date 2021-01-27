@@ -112,12 +112,15 @@ def hexa(stri, base):
 
 def string(stri, base):
     '''Converts input to string format'''
-    return _to_str(hexa(stri, base)).strip()
+    stri = hexa(stri, base)
+    stri = stri.replace(' ', '20')
+    stri = stri.replace('\n', '0a')
+    return _to_str(stri)
 
 def _to_str(stri):
     '''Turns hex string to utf-8'''
     try:
-        return bytes.fromhex(stri).decode("utf-8")
+        return bytes.fromhex(''.join(stri)).decode("utf-8")
     except:
         return ""
 
@@ -216,10 +219,6 @@ def last_ip(subnet, mask):
     ret[3] = str(int(ret[3]) - 1)
     return '.'.join(ret)
 
-
-
-
-
 def bits_to_decimal(stri):
     '''Transforms 32 bit long string of bits to 8 bit long decimal numbers,
     separated by "." character'''
@@ -257,11 +256,3 @@ def is_mask(bitstring):
 
 def is_binary(stri):
     return re.match("[01]", stri)
-
-'''print(bits_to_decimal(ip("bepsis/31")))
-ip("bepsis")
-ip("/ree")
-print(bits_to_decimal(ip("/1")))
-print(broadcast("192.168.1.0", "255.255.255.0"))
-print(last_ip(subnet("192.168.1.144", "255.0.0.0"), "255.192.0.0"))'''
-#print(is_mask("11111111111000000000000000000000"))
