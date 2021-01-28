@@ -4,9 +4,11 @@ import re
 
 def binary(stri, base):
     '''Converts input to binary format'''
+    is_string = False
     if base == 0:
         stri = _to_hex(stri)
         base = 16
+        is_string = True
     ret = []
 
     for item in stri:
@@ -27,13 +29,17 @@ def binary(stri, base):
         ret[i] = ' '.join(ret[i]).strip()
         i += 1
       
-    return '\n'.join(ret).strip()
+    if not is_string:
+        return '\n'.join(ret).strip()
+    return ' '.join(ret).strip()
 
 def decimal(stri, base):
     '''Converts input to decimal format'''
+    is_string = False
     if base == 0:
         stri = _to_hex(stri)
         base = 16
+        is_string = True
     ret = []
 
     for item in stri:
@@ -53,15 +59,18 @@ def decimal(stri, base):
     while i < len(ret):
         ret[i] = ' '.join(ret[i]).strip()
         i += 1
-      
-    return '\n'.join(ret).strip()
+    if not is_string:
+        return '\n'.join(ret).strip()
+    return ' '.join(ret).strip()
 
 
 def octa(stri, base):
     '''Converts input to octal format'''
+    is_string = False
     if base == 0:
         stri = _to_hex(stri)
         base = 16
+        is_string = True
     ret = []
 
     for item in stri:
@@ -82,7 +91,9 @@ def octa(stri, base):
         ret[i] = ' '.join(ret[i]).strip()
         i += 1
       
-    return '\n'.join(ret).strip()
+    if not is_string:
+        return '\n'.join(ret).strip()
+    return ' '.join(ret).strip()
 
 def hexa(stri, base):
     '''Converts input to hex format'''
